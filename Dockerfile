@@ -9,7 +9,6 @@ RUN dnf -y update && dnf clean all
 # Ensure systemd-logind is not masked
 RUN rm -f /etc/systemd/system/systemd-logind.service;
 
-# Install requirements
 RUN dnf -y install rpm dnf-plugins-core \
     && dnf -y install \
         epel-release \
@@ -31,8 +30,6 @@ ENV LANG=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
 
 RUN dnf -y install libcurl --allowerasing && dnf clean all
-
-# Upgrade pip to latest version
 RUN pip3 install --upgrade pip
 
 # Disable requiretty.
