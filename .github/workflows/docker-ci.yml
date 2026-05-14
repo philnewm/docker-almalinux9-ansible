@@ -50,6 +50,26 @@ jobs:
           -v /sys/fs/cgroup:/sys/fs/cgroup:rw --cgroupns=host
           docker-ansible
 
+      - name: Verify LANG environment
+        run: >-
+          docker exec test-container
+          bash -c '[ "$LANG" = "en_US.UTF-8" ]'
+
+      - name: Verify locale.conf
+        run: >-
+          docker exec test-container
+          bash -c 'grep -qx "LANG=en_US.UTF-8" /etc/locale.conf'
+
+      - name: Verify UTF-8 locale exists
+        run: >-
+          docker exec test-container
+          bash -c 'locale -a | grep -qi "en_US"'
+
+      - name: Verify active locale
+        run: >-
+          docker exec test-container
+          bash -c 'locale | grep -q "^LANG=en_US.UTF-8$"'
+
       - name: Verify systemd is running in the built image
         run: docker exec test-container bash -c 'ps -p 1 -o comm= | grep -qx systemd'
 
