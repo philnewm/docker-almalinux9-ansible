@@ -1,6 +1,6 @@
 FROM quay.io/almalinuxorg/9-init
 LABEL maintainer="philnewm"
-ENV container "docker"
+ENV container="docker"
 
 RUN echo "max_parallel_downloads=20" >> /etc/dnf/dnf.conf
 
@@ -11,19 +11,26 @@ RUN rm -f /etc/systemd/system/systemd-logind.service;
 
 # Install requirements
 RUN dnf -y install rpm dnf-plugins-core \
- && dnf -y update \
- && dnf -y install \
-     epel-release \
-     initscripts \
-     sudo \
-     which \
-     hostname \
-     libyaml \
-     python3 \
-     python3-pip \
-     python3-pyyaml \
-     iproute \
- && dnf clean all
+    && dnf -y install \
+        epel-release \
+        initscripts \
+        sudo \
+        which \
+        hostname \
+        libyaml \
+        python3 \
+        python3-pip \
+        python3-pyyaml \
+        iproute \
+        glibc-langpack-en \
+    && dnf clean all
+
+RUN echo 'LANG=en_US.UTF-8' > /etc/locale.conf
+
+ENV LANG=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
+
+RUN dnf -y install libcurl --allowerasing && dnf clean all
 
 # Upgrade pip to latest version
 RUN pip3 install --upgrade pip
@@ -32,7 +39,7 @@ RUN pip3 install --upgrade pip
 RUN sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers
 
 # Fix shadow file permissions
-# INFO https://github.com/rocky-linux/sig-cloud-instance-images/issues/56
+# Note https://github.com/rocky-linux/sig-cloud-instance-images/issues/56
 RUN chmod 0640 /etc/shadow
 
 # Setup ansible user
